@@ -35,19 +35,19 @@ Verificamos si tenemos traza ICMP con la máquina virtual con el siguiente coman
 
     ping -c 1 10.10.35.36
 
-![img1](/home/hiteek/Github/TryHackMe/AttacktiveDirectory/img/img1.png)
+![img1](https://github.com/Hiteek/TryHackMe/blob/master/AttacktiveDirectory/img/img1.png)
 
 Si podemos enviar paquetes además como el ttl es 127 podemos decir que se trata de una máquina Windows.
 
 Para un escano rapido y centrado en el Active Directory podemos usar la herramienta **enum4linux**.
 
-![img3](/home/hiteek/Github/TryHackMe/AttacktiveDirectory/img/img3.png)
+![img3](https://github.com/Hiteek/TryHackMe/blob/master/AttacktiveDirectory/img/img3.png)
 
 Para un escaneo más exhaustivo utilizaremos la herramienta **Nmap**.
 
     nmap -p- --open -T5 -v -n 10.10.35.36
 
-![img2](/home/hiteek/Github/TryHackMe/AttacktiveDirectory/img/img2.png)
+![img2](https://github.com/Hiteek/TryHackMe/blob/master/AttacktiveDirectory/img/img2.png)
 
 Luego lanzaremos una serie de scrips básicos de enumeración sobre los puertos abiertos con **Nmap**.
 
@@ -123,19 +123,19 @@ Nos fijamos en el puerto 3389 que nos muestra el NetBIOS_Domain_Name y el TLD.
 
 Ahora con la [lista de usuarios](https://raw.githubusercontent.com/Sq00ky/attacktive-directory-tools/master/userlist.txt) potenciales del DC que nos dio la pagina y la herramienta **Kerbrute** podemos enumerar los usarios validos del Dominio.
 
-![img4](/home/hiteek/Github/TryHackMe/AttacktiveDirectory/img/img4.png)
+![img4](https://github.com/Hiteek/TryHackMe/blob/master/AttacktiveDirectory/img/img4.png)
 
 Para ello ejecutaremos el siguiente comando dentro de la carpeta de Kerbrute.
 
     ./kerbrute userenum --dc 10.10.35.36 -d spookysec.local userlist.txt
 
-![img6](/home/hiteek/Github/TryHackMe/AttacktiveDirectory/img/img6.png)
+![img6](https://github.com/Hiteek/TryHackMe/blob/master/AttacktiveDirectory/img/img6.png)
 
 Como atacantes de la lista de usuarios validos nos llaman la atención dos usuarios: svc-admin y backup
 
 Genial! Ahora que conocemos que usuarios son validos podemos usar la herramienta **GetNPUsers.py** para saber que usuarios no requieren de autenticacion previa. La autenticación previa es el primer paso en la autenticación Kerberos y está diseñada para evitar ataques de adivinación de contraseñas por fuerza bruta.
 
-![img7](/home/hiteek/Github/TryHackMe/AttacktiveDirectory/img/img7.png)
+![img7](https://github.com/Hiteek/TryHackMe/blob/master/AttacktiveDirectory/img/img7.png)
 
 El usuario svc-admin es ASReproastable ya que no tiene autenticacion previa. Ademas nos devolvio un hash al final.
 
@@ -147,7 +147,7 @@ Haciendo uso de la herramienta **hashcat** vamos a crackear el hash que obtuvimo
 
     hashcat --example-hashes | grep "krb5asr" -B 3
 
-![img8](/home/hiteek/Github/TryHackMe/AttacktiveDirectory/img/img8.png)
+![img8](https://github.com/Hiteek/TryHackMe/blob/master/AttacktiveDirectory/img/img8.png)
 
 Ahora que sabemos que es un hash de tipo Kerberos 5 AS-REP etype 23 modo 18200 ya podremos romperlo con hashcat usando la [lista de contraseñas](https://raw.githubusercontent.com/Sq00ky/attacktive-directory-tools/master/passwordlist.txt) que nos da la pagina.
 
@@ -160,6 +160,6 @@ Para mostrar el resultado usaremos el comando:
     hashcat -m 18200 -a 0 hash passwordlist.txt --show
 
 
-![img9](/home/hiteek/Github/TryHackMe/AttacktiveDirectory/img/img9.png)
+![img9](https://github.com/Hiteek/TryHackMe/blob/master/AttacktiveDirectory/img/img9.png)
 
 La contraseña del usuario svc-admin es management2005
